@@ -1,51 +1,51 @@
 import React from 'react'
+import axios from "axios"
 import Form from "./Form"
 import TodoList from "./TodoList"
-import ReactDOM from "react-dom"
 
 const URL = 'http://localhost:9000/api/todos'
 
 export default class App extends React.Component {
   constructor() {
-    console.log("constructor invoked")
     super();
     this.state = {
       todos: [],
-      name: '',
-      completed: false
+      error: '',
+      todoNameInput: '',
     }
   }
-  handleInputChange = (event) => {
-    this.setState({ name: event.target.value })
+  onTodoNameInputChange = event => {
+    const { value } = event.target
+    this.setState({ ...this.state, todoNameInput: value })
   }
-  handleAddTodo = (event) => {
-    event.preventdefault()
-    const newTodo = {
-      name: this.state.name,
-      completed: false,
-    }
-    this.setState((prevState) => ({
-      todos: [...prevState.todos, newTodo],
-      name: '',
-    }))
+  fetchAllTodos = () => {
+    axios.get(URL)
+    .then(res => {
+      this.setState({ ...this.state, todos: res.data.data })
+    })
+    .catch(err => {
+      this.setState({ ...this.state, error: err.response.data.message })
+    })
   }
-
-  componenetDidMount() {
-    console.log("CDM invoked")
-    fetch(URL)
-      .then(res => res.json())
-      .then(data => this.setState({ todos: data }))
-      .catch(err => console.log(err.message))
-    }
+  componentDidMount() {
+    this.fetchAllTodos()
+  }
   render() {
-    console.log("render invoked")
-    return (
+    return(
       <div>
-        <TodoList todos={this.state.todos}/>
-        <Form
-        name={this.state.name}
-        handleInputChange={this.handleInputChange}
-        handleAddTodo={this.handleAddTodo} />
+        <div id='error'>ERROR: {this.state.error}</div>
+        {
+          this.state.todos.map(todo => {
+            return <div key={todo.key}>{todo.name}</div>
+          })
+        }
+        <Form />
+        <input 
+        value={this.state.todoNameInput} 
+        type='text' 
+        placeholder='type todo'
+        onChange={this.onTodoNameInputChange} />
+        <input type='button'/>
       </div>
     )
   }
