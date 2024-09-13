@@ -63,28 +63,18 @@ export default class App extends React.Component {
     return (
       <div>
         <div id='error'>ERROR: {this.state.error}</div>
-        <div id='todos'>
-          <h2>Todos:</h2>
-        
-        {
-          this.state.todos.reduce((acc, td) => {
-            if (this.state.displayCompleted || !td.completed) return acc.concat(
-              <div onClick={this.toggleCompleted(td.id)}key={td.key}>{td.name} {td.completed ? " ✔️" : ""}</div>
-            )
-              return acc
-          }, [])
-        //(todo => {return <div onClick={this.toggleCompleted(todo.id)}key={todo.key}>{todo.name} {todo.completed ? " ✔️" : ""}</div>})
-        }
-        </div>
-        <form id='todoForm' onSubmit={this.onTodoFormSubmit}>
-        <input 
-        value={this.state.todoNameInput} 
-        onChange={this.onTodoNameInputChange} 
-        type='text' 
-        placeholder='type todo'/>
-        <input type='submit'></input>
-        </form>
-        <button onClick={this.toggleDisplayCompleted}>{this.state.displayCompleted ? 'hide' : 'show'} completed</button>
+          <TodoList 
+          displayCompleted={this.state.displayCompleted}
+          todos={this.state.todos}
+          toggleCompleted={this.toggleCompleted}
+        />
+          <Form 
+          onTodoFormSubmit={this.onTodoFormSubmit}
+          onTodoNameInputChange={this.onTodoNameInputChange}
+          toggleDisplayCompleted={this.toggleDisplayCompleted}
+          todoNameInput={this.state.todoNameInput}
+          displayCompleted={this.state.displayCompleted}
+        />
       </div>
     )
   }
